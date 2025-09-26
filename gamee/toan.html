@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Toán Học Nâng Cao</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .start-content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 50px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 95%;
+        }
+
+        .start-content h1 {
+            color: #5d3fd3;
+            margin-bottom: 40px;
+            font-size: 3rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            font-weight: 700;
+        }
+
+        .difficulty-selection {
+            margin: 40px 0;
+        }
+
+        .difficulty-selection h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .difficulty-btn {
+            padding: 20px 35px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            min-width: 140px;
+        }
+
+        .difficulty-btn.easy {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: 3px solid #388E3C;
+        }
+
+        .difficulty-btn.medium {
+            background: linear-gradient(135deg, #FF9800, #FF5722);
+            color: white;
+            border: 3px solid #E65100;
+        }
+
+        .difficulty-btn.hard {
+            background: linear-gradient(135deg, #F44336, #D32F2F);
+            color: white;
+            border: 3px solid #C62828;
+        }
+
+        .difficulty-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .difficulty-btn.active {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.8), 
+                        0 15px 30px rgba(0, 0, 0, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.8), 0 15px 30px rgba(0, 0, 0, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.4), 0 15px 30px rgba(0, 0, 0, 0.4); }
+            100% { box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.8), 0 15px 30px rgba(0, 0, 0, 0.4); }
+        }
+
+        .selected-difficulty {
+            margin: 20px 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #5d3fd3;
+            min-height: 30px;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #5d3fd3, #7d5fff);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .header h1 {
+            color: #5d3fd3;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .game-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .question-container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin: 30px 0;
+            border: 4px solid #5d3fd3;
+        }
+
+        .question-text {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .question-hint {
+            font-size: 1rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 10px;
+        }
+
+        .health-bar-container {
+            width: 100%;
+            height: 25px;
+            background: #ddd;
+            border-radius: 12px;
+            margin: 20px 0;
+            overflow: hidden;
+            border: 3px solid #333;
+        }
+
+        .health-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            width: 100%;
+            transition: width 0.5s ease;
+        }
+
+        .health-text {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .answer-container {
+            margin: 30px auto;
+            max-width: 500px;
+        }
+
+        .answer-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        #answer-input {
+            flex: 1;
+            padding: 15px 20px;
+            font-size: 1.4rem;
+            border: 3px solid #5d3fd3;
+            border-radius: 15px;
+            text-align: center;
+            outline: none;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .quick-options {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .quick-btn {
+            background: linear-gradient(135deg, #FF9800, #FF5722);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quick-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px auto;
+            max-width: 500px;
+        }
+
+        .option {
+            background: linear-gradient(135deg, #5d3fd3, #7d5fff);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover {
+            background: linear-gradient(135deg, #7d5fff, #9d7fff);
+            transform: translateY(-3px);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #9c27b0, #ba68c8);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .feedback {
+            margin: 20px 0;
+            font-size: 1.5rem;
+            font-weight: bold;
+            min-height: 60px;
+            padding: 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .correct {
+            color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+            border: 2px solid #4CAF50;
+        }
+
+        .incorrect {
+            color: #F44336;
+            background: rgba(244, 67, 54, 0.1);
+            border: 2px solid #F44336;
+        }
+
+        .timer-display {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #5d3fd3;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            display: inline-block;
+            min-width: 120px;
+        }
+
+        @media (max-width: 768px) {
+            .start-content {
+                padding: 30px;
+                margin: 20px;
+            }
+            
+            .start-content h1 {
+                font-size: 2.2rem;
+            }
+            
+            .difficulty-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .difficulty-btn {
+                width: 200px;
+                padding: 18px;
+            }
+            
+            .game-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .game-info {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .answer-input-group {
+                flex-direction: column;
+            }
+            
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .control-btn {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Màn hình bắt đầu -->
+    <div class="start-screen" id="start-screen">
+        <div class="start-content">
+            <h1>Game Toán Học Nâng Cao</h1>
+            <div class="difficulty-selection">
+                <h2>Chọn độ khó:</h2>
+                <div class="difficulty-buttons">
+                    <button class="difficulty-btn easy" data-difficulty="easy">Dễ (10 phút)</button>
+                    <button class="difficulty-btn medium" data-difficulty="medium">Khó (15 phút)</button>
+                    <button class="difficulty-btn hard" data-difficulty="hard">Siêu Khó (20 phút)</button>
+                </div>
+                <div class="selected-difficulty" id="selected-difficulty">Đã chọn: Dễ (10 phút)</div>
+            </div>
+            <button class="start-btn" id="start-btn">Bắt Đầu</button>
+        </div>
+    </div>
+
+    <!-- Màn hình game -->
+    <div class="game-container" id="game-container" style="display: none;">
+        <div class="header">
+            <h1>Game Toán Học Nâng Cao</h1>
+            <div class="game-info">
+                <div class="score">Điểm: <span id="score-value">0</span></div>
+                <div class="level">Cấp độ: <span id="level-value">1</span></div>
+                <div class="difficulty-display">Độ khó: <span id="difficulty-value">Dễ</span></div>
+                <div class="timer">Thời gian: <span id="timer-value">10:00</span></div>
+            </div>
+        </div>
+        
+        <div class="timer-display" id="timer-display">10:00</div>
+        
+        <div class="question-container">
+            <div class="question-text" id="question">Một số tự nhiên n có tổng các chữ số bằng 15. Nếu viết thêm chữ số 7 vào bên phải số n, thì số mới lớn hơn số gốc là 1600 đơn vị. Tìm n.</div>
+            <div class="question-hint" id="question-hint">Bài toán nâng cao - Thời gian: 20 phút</div>
+        </div>
+        
+        <div class="health-bar-container">
+            <div class="health-bar" id="health-bar"></div>
+        </div>
+        <div class="health-text" id="health-text">Máu: 100/100</div>
+        
+        <!-- Chế độ nhập -->
+        <div class="answer-container" id="input-mode">
+            <div class="answer-input-group">
+                <input type="text" id="answer-input" placeholder="Nhập đáp án...">
+                <button id="submit-answer" class="submit-btn">Trả lời</button>
+            </div>
+            <div class="quick-options">
+                <button class="quick-btn" data-value="-5">-5</button>
+                <button class="quick-btn" data-value="-1">-1</button>
+                <button class="quick-btn" data-value="+1">+1</button>
+                <button class="quick-btn" data-value="+5">+5</button>
+                <button class="quick-btn" id="clear-btn">Xóa</button>
+            </div>
+        </div>
+        
+        <!-- Chế độ chọn -->
+        <div class="options-container" id="choice-mode" style="display: none;">
+            <!-- Các đáp án sẽ được thêm bằng JavaScript -->
+        </div>
+        
+        <!-- Nút điều khiển -->
+        <div class="controls">
+            <button id="toggle-mode" class="control-btn">Chuyển sang chế độ chọn</button>
+            <button id="restart-game" class="control-btn">Chơi lại</button>
+            <button id="back-to-menu" class="control-btn">Về menu</button>
+        </div>
+        
+        <div class="feedback" id="feedback"></div>
+    </div>
+
+    <script>
+        // Biến toàn cục
+        let selectedDifficulty = 'easy';
+        let score = 0;
+        let health = 100;
+        let gameMode = 'input'; // 'input' hoặc 'choice'
+        let currentQuestion = {};
+        let timer;
+        let timerInterval;
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const gameContainer = document.getElementById('game-container');
+        const startBtn = document.getElementById('start-btn');
+        const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+        const selectedDifficultyElement = document.getElementById('selected-difficulty');
+        const scoreElement = document.getElementById('score-value');
+        const healthTextElement = document.getElementById('health-text');
+        const healthBarElement = document.getElementById('health-bar');
+        const questionElement = document.getElementById('question');
+        const questionHintElement = document.getElementById('question-hint');
+        const answerInput = document.getElementById('answer-input');
+        const submitButton = document.getElementById('submit-answer');
+        const inputMode = document.getElementById('input-mode');
+        const choiceMode = document.getElementById('choice-mode');
+        const optionsContainer = document.getElementById('choice-mode');
+        const toggleModeBtn = document.getElementById('toggle-mode');
+        const restartGameBtn = document.getElementById('restart-game');
+        const backToMenuBtn = document.getElementById('back-to-menu');
+        const feedbackElement = document.getElementById('feedback');
+        const timerElement = document.getElementById('timer-value');
+        const timerDisplay = document.getElementById('timer-display');
+
+        // Khởi tạo game
+        document.addEventListener('DOMContentLoaded', function() {
+            initGame();
+        });
+
+        function initGame() {
+            setDefaultDifficulty();
+            
+            difficultyBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    selectDifficulty(this);
+                });
+            });
+            
+            startBtn.addEventListener('click', startGame);
+            submitButton.addEventListener('click', checkAnswerInput);
+            answerInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') checkAnswerInput();
+            });
+            
+            toggleModeBtn.addEventListener('click', toggleGameMode);
+            restartGameBtn.addEventListener('click', restartGame);
+            backToMenuBtn.addEventListener('click', backToMenu);
+            
+            document.querySelectorAll('.quick-btn').forEach(btn => {
+                if (btn.id !== 'clear-btn') {
+                    btn.addEventListener('click', function() {
+                        const value = this.dataset.value;
+                        const currentValue = answerInput.value;
+                        if (currentValue === '') {
+                            answerInput.value = value;
+                        } else {
+                            answerInput.value = currentValue + value;
+                        }
+                    });
+                }
+            });
+
+            document.getElementById('clear-btn').addEventListener('click', function() {
+                answerInput.value = '';
+            });
+        }
+
+        function selectDifficulty(button) {
+            difficultyBtns.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            selectedDifficulty = button.dataset.difficulty;
+            selectedDifficultyElement.textContent = `Đã chọn: ${getDifficultyName(selectedDifficulty)} (${getTimeLimit(selectedDifficulty)/60} phút)`;
+        }
+
+        function setDefaultDifficulty() {
+            const easyBtn = document.querySelector('.difficulty-btn.easy');
+            easyBtn.classList.add('active');
+            selectedDifficulty = 'easy';
+            selectedDifficultyElement.textContent = `Đã chọn: ${getDifficultyName(selectedDifficulty)} (${getTimeLimit(selectedDifficulty)/60} phút)`;
+        }
+
+        function startGame() {
+            startScreen.style.display = 'none';
+            gameContainer.style.display = 'block';
+            document.getElementById('difficulty-value').textContent = getDifficultyName(selectedDifficulty);
+            
+            resetGame();
+            generateQuestion();
+            startTimer();
+        }
+
+        function toggleGameMode() {
+            if (gameMode === 'input') {
+                gameMode = 'choice';
+                inputMode.style.display = 'none';
+                choiceMode.style.display = 'grid';
+                toggleModeBtn.textContent = 'Chuyển sang chế độ nhập';
+            } else {
+                gameMode = 'input';
+                inputMode.style.display = 'block';
+                choiceMode.style.display = 'none';
+                toggleModeBtn.textContent = 'Chuyển sang chế độ chọn';
+            }
+            generateQuestion();
+        }
+
+        function generateQuestion() {
+            const difficultySettings = getDifficultySettings();
+            const questionTypes = difficultySettings.questionTypes;
+            const selectedType = questionTypes[Math.floor(Math.random() * questionTypes.length)];
+            
+            currentQuestion = generateQuestionByType(selectedType, difficultySettings);
+            
+            questionElement.innerHTML = currentQuestion.question;
+            questionHintElement.textContent = currentQuestion.hint;
+            
+            if (gameMode === 'choice') {
+                generateOptions(currentQuestion.answer, difficultySettings.optionVariation);
+            } else {
+                answerInput.value = '';
+                answerInput.focus();
+            }
+        }
+
+        function generateQuestionByType(type, settings) {
+            switch(type) {
+                case 'addition':
+                    return generateAdditionQuestion(settings);
+                case 'subtraction':
+                    return generateSubtractionQuestion(settings);
+                case 'multiplication':
+                    return generateMultiplicationQuestion(settings);
+                case 'division':
+                    return generateDivisionQuestion(settings);
+                case 'algebra':
+                    return generateAlgebraQuestion(settings);
+                case 'geometry':
+                    return generateGeometryQuestion(settings);
+                case 'calculus':
+                    return generateCalculusQuestion(settings);
+                case 'matrix':
+                    return generateMatrixQuestion(settings);
+                case 'permutation':
+                    return generatePermutationQuestion(settings);
+                case 'advanced':
+                    return generateAdvancedQuestion(settings);
+                default:
+                    return generateAdvancedQuestion(settings);
+            }
+        }
+
+        // Các hàm tạo câu hỏi
+        function generateAdditionQuestion(settings) {
+            const a = Math.floor(Math.random() * settings.maxNumber) + 1;
+            const b = Math.floor(Math.random() * settings.maxNumber) + 1;
+            return {
+                question: `${a} + ${b} = ?`,
+                answer: a + b,
+                hint: 'Phép cộng cơ bản'
+            };
+        }
+
+        function generateSubtractionQuestion(settings) {
+            const a = Math.floor(Math.random() * settings.maxNumber) + 10;
+            const b = Math.floor(Math.random() * (a - 1)) + 1;
+            return {
+                question: `${a} - ${b} = ?`,
+                answer: a - b,
+                hint: 'Phép trừ cơ bản'
+            };
+        }
+
+        function generateMultiplicationQuestion(settings) {
+            const a = Math.floor(Math.random() * 12) + 1;
+            const b = Math.floor(Math.random() * 12) + 1;
+            return {
+                question: `${a} × ${b} = ?`,
+                answer: a * b,
+                hint: 'Phép nhân cơ bản'
+            };
+        }
+
+        function generateDivisionQuestion(settings) {
+            const b = Math.floor(Math.random() * 10) + 2;
+            const a = b * (Math.floor(Math.random() * 10) + 1);
+            return {
+                question: `${a} ÷ ${b} = ?`,
+                answer: a / b,
+                hint: 'Phép chia cơ bản'
+            };
+        }
+
+        function generateAlgebraQuestion(settings) {
+            const a = Math.floor(Math.random() * 10) + 1;
+            const b = Math.floor(Math.random() * 10) + 1;
+            const c = a + b;
+            return {
+                question: `Giải phương trình: x + ${a} = ${c}`,
+                answer: b,
+                hint: 'Phương trình đại số đơn giản'
+            };
+        }
+
+        function generateGeometryQuestion(settings) {
+            const side = Math.floor(Math.random() * 10) + 1;
+            return {
+                question: `Diện tích hình vuông cạnh ${side} là?`,
+                answer: side * side,
+                hint: 'Diện tích hình vuông = cạnh × cạnh'
+            };
+        }
+
+        function generateCalculusQuestion(settings) {
+            const n = Math.floor(Math.random() * 3) + 2;
+            return {
+                question: `Đạo hàm của x^${n} là?`,
+                answer: `${n}x^${n-1}`,
+                hint: `Quy tắc đạo hàm: (x^n)' = n*x^(n-1)`
+            };
+        }
+
+        function generateMatrixQuestion(settings) {
+            const a = Math.floor(Math.random() * 5) + 1;
+            const b = Math.floor(Math.random() * 5) + 1;
+            return {
+                question: `Ma trận ${a}×${b} có bao nhiêu phần tử?`,
+                answer: a * b,
+                hint: 'Số phần tử = số hàng × số cột'
+            };
+        }
+
+        function generatePermutationQuestion(settings) {
+            const n = Math.floor(Math.random() * 5) + 3;
+            return {
+                question: `Số hoán vị của ${n} phần tử là?`,
+                answer: factorial(n),
+                hint: `P(${n}) = ${n}!`
+            };
+        }
+
+        function generateAdvancedQuestion(settings) {
+            // Bài toán nâng cao với thời gian 20 phút
+            return {
+                question: "Một số tự nhiên n có tổng các chữ số bằng 15. Nếu viết thêm chữ số 7 vào bên phải số n, thì số mới lớn hơn số gốc là 1600 đơn vị. Tìm n.",
+                answer: 177,
+                hint: "Gọi số mới là 10n + 7. Theo đề: (10n + 7) - n = 1600"
+            };
+        }
+
+        function factorial(n) {
+            if (n === 0 || n === 1) return 1;
+            let result = 1;
+            for (let i = 2; i <= n; i++) {
+                result *= i;
+            }
+            return result;
+        }
+
+        function generateOptions(correctAnswer, variation) {
+            optionsContainer.innerHTML = '';
+            let options = [correctAnswer];
+            
+            while (options.length < 4) {
+                let wrongAnswer;
+                if (typeof correctAnswer === 'number') {
+                    wrongAnswer = correctAnswer + (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * variation) + 1);
+                } else {
+                    // For text answers, create variations
+                    wrongAnswer = 'Khác';
+                }
+                
+                if (!options.includes(wrongAnswer)) {
+                    options.push(wrongAnswer);
+                }
+            }
+            
+            options = shuffleArray(options);
+            
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option';
+                button.textContent = option;
+                button.addEventListener('click', () => checkAnswerChoice(option));
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswerInput() {
+            const userAnswer = answerInput.value.trim();
+            checkAnswer(userAnswer);
+        }
+
+        function checkAnswerChoice(selectedAnswer) {
+            checkAnswer(selectedAnswer);
+        }
+
+        function checkAnswer(userAnswer) {
+            let isCorrect = false;
+            
+            if (typeof currentQuestion.answer === 'number') {
+                isCorrect = parseFloat(userAnswer) === currentQuestion.answer;
+            } else {
+                isCorrect = userAnswer.toString().toLowerCase() === currentQuestion.answer.toString().toLowerCase();
+            }
+            
+            if (isCorrect) {
+                score += 10;
+                health = Math.min(100, health + 5);
+                showFeedback('Chính xác! +10 điểm', 'correct');
+            } else {
+                health -= 10;
+                showFeedback(`Sai! Đáp án: ${currentQuestion.answer}`, 'incorrect');
+            }
+            
+            updateGameStats();
+            
+            if (health <= 0) {
+                gameOver();
+            } else {
+                setTimeout(() => {
+                    feedbackElement.textContent = '';
+                    generateQuestion();
+                    resetTimer();
+                }, 2000);
+            }
+        }
+
+        function startTimer() {
+            const timeLimit = getTimeLimit(selectedDifficulty);
+            timer = timeLimit;
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                timer--;
+                updateTimerDisplay();
+                
+                if (timer <= 0) {
+                    clearInterval(timerInterval);
+                    health -= 15;
+                    showFeedback('Hết giờ! -15 máu', 'incorrect');
+                    updateGameStats();
+                    
+                    if (health <= 0) {
+                        gameOver();
+                    } else {
+                        setTimeout(() => {
+                            feedbackElement.textContent = '';
+                            generateQuestion();
+                            resetTimer();
+                        }, 2000);
+                    }
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timer / 60);
+            const seconds = timer % 60;
+            const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            timerElement.textContent = display;
+            timerDisplay.textContent = display;
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            startTimer();
+        }
+
+        function updateGameStats() {
+            scoreElement.textContent = score;
+            healthTextElement.textContent = `Máu: ${health}/100`;
+            healthBarElement.style.width = `${health}%`;
+            
+            if (health > 70) {
+                healthBarElement.style.background = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
+            } else if (health > 30) {
+                healthBarElement.style.background = 'linear-gradient(90deg, #FF9800, #FFC107)';
+            } else {
+                healthBarElement.style.background = 'linear-gradient(90deg, #F44336, #E91E63)';
+            }
+        }
+
+        function gameOver() {
+            clearInterval(timerInterval);
+            alert(`Game Over! Điểm số của bạn: ${score}`);
+            restartGame();
+        }
+
+        function restartGame() {
+            resetGame();
+            generateQuestion();
+            startTimer();
+        }
+
+        function backToMenu() {
+            clearInterval(timerInterval);
+            gameContainer.style.display = 'none';
+            startScreen.style.display = 'flex';
+            resetGame();
+        }
+
+        function resetGame() {
+            score = 0;
+            health = 100;
+            updateGameStats();
+        }
+
+        function showFeedback(message, type) {
+            feedbackElement.textContent = message;
+            feedbackElement.className = `feedback ${type}`;
+        }
+
+        function getDifficultySettings() {
+            switch(selectedDifficulty) {
+                case 'easy':
+                    return {
+                        maxNumber: 20,
+                        optionVariation: 5,
+                        questionTypes: ['addition', 'subtraction', 'multiplication', 'division']
+                    };
+                case 'medium':
+                    return {
+                        maxNumber: 50,
+                        optionVariation: 8,
+                        questionTypes: ['addition', 'subtraction', 'multiplication', 'division', 'algebra', 'geometry']
+                    };
+                case 'hard':
+                    return {
+                        maxNumber: 100,
+                        optionVariation: 12,
+                        questionTypes: ['advanced', 'algebra', 'geometry', 'calculus', 'matrix', 'permutation']
+                    };
+                default:
+                    return getDifficultySettings('easy');
+            }
+        }
+
+        function getTimeLimit(difficulty) {
+            switch(difficulty) {
+                case 'easy': return 600; // 10 phút
+                case 'medium': return 900; // 15 phút
+                case 'hard': return 1200; // 20 phút
+                default: return 600;
+            }
+        }
+
+        function getDifficultyName(difficulty) {
+            const names = { easy: 'Dễ', medium: 'Khó', hard: 'Siêu Khó' };
+            return names[difficulty] || 'Dễ';
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+    </script>
+</body>
+</html>
